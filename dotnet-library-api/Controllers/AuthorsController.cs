@@ -21,12 +21,12 @@ public class AuthorsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<AuthorDto>> GetAuthorById(int id)
     {
-        var author = await _libraryDbContext.Authors.Where(a => a.Id == id).Select(a => new AuthorDto(a.Id, a.Name, a.Books.Count)).FirstOrDefaultAsync();
-        if(author == null)
+        var authorDto = await _libraryDbContext.Authors.Where(a => a.Id == id).Select(a => new AuthorDto(a.Id, a.Name, a.Books.Count)).FirstOrDefaultAsync();
+        if(authorDto == null)
         {
             return NotFound("Author wurde nicht gefunden");
         }
-        return Ok(author);
+        return Ok(authorDto);
     }
 
     [HttpPost]
