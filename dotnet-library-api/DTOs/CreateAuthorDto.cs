@@ -1,7 +1,6 @@
-﻿namespace dotnet_library_api.DTOs
-{
-    record CreateAuthorDto
-    (
-        string Name
-    );
-}
+﻿namespace dotnet_library_api.DTOs;
+
+public record CreateAuthorDto
+(
+    string Name
+);

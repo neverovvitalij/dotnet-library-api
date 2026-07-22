@@ -1,9 +1,8 @@
-﻿namespace dotnet_library_api.DTOs
-{
-    record AuthorDto
-    (
-        int Id,
-        string Name,
-        int BooksCount
-    );
-}
+﻿namespace dotnet_library_api.DTOs;
+
+public record AuthorDto
+(
+    int Id,
+    string Name,
+    int BooksCount
+);

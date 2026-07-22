@@ -1,11 +1,10 @@
-﻿namespace dotnet_library_api.Models
+﻿namespace dotnet_library_api.Models;
+
+public class Author
 {
-    public class Author
-    {
-        public int Id { get; set; }
-        public string Name { get; set; } = string.Empty;
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
 
-        public ICollection<Book> Books { get; set; } = new List<Book>();
+    public ICollection<Book> Books { get; set; } = new List<Book>();
 
-    }
 }

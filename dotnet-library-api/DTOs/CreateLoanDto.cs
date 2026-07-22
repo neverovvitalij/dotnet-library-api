@@ -1,8 +1,7 @@
-﻿namespace dotnet_library_api.DTOs
-{
-    record CreateLoanDto
-    (
-        int BookId,
-        string BorrowerName
-    );
-}
+﻿namespace dotnet_library_api.DTOs;
+
+public record CreateLoanDto
+(
+    int BookId,
+    string BorrowerName
+);
