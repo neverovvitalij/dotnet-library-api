@@ -1,4 +1,4 @@
-﻿using dotnet_library_api.Data;
+﻿using dotnet_library_api.Infrastructure.Data;
 using dotnet_library_api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

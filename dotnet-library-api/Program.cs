@@ -1,5 +1,7 @@
 
-using dotnet_library_api.Data;
+using dotnet_library_api.Application.Interfaces;
+using dotnet_library_api.Infrastructure.Data;
+using dotnet_library_api.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 namespace dotnet_library_api;
 
@@ -12,6 +14,8 @@ public class Program
         var connectionString = builder.Configuration.GetConnectionString("LibraryDb");
 
         builder.Services.AddDbContext<LibraryDbContext>(options => options.UseNpgsql(connectionString));
+
+        builder.Services.AddScoped<IBookRepository, BookRepository>();
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
