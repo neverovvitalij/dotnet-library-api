@@ -1,4 +1,5 @@
-﻿namespace dotnet_library_api.Models;
+﻿namespace dotnet_library_api.Domain.Models;
+
 
 public class Loan
 {

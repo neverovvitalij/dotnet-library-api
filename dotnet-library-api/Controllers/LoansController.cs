@@ -1,7 +1,6 @@
 ﻿using dotnet_library_api.Data;
 using dotnet_library_api.DTOs;
-using dotnet_library_api.Models;
-using Microsoft.AspNetCore.Components.Web;
+using dotnet_library_api.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

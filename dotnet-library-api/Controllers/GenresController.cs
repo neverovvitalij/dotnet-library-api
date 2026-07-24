@@ -2,7 +2,7 @@
 using dotnet_library_api.DTOs;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using dotnet_library_api.Models;
+using dotnet_library_api.Domain.Models;
 
 
 namespace dotnet_library_api.Controllers;

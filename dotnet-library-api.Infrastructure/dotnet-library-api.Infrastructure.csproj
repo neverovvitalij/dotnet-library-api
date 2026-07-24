@@ -1,0 +1,15 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <RootNamespace>dotnet_library_api.Infrastructure</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\dotnet-library-api.Application\dotnet-library-api.Application.csproj" />
+    <ProjectReference Include="..\dotnet-library-api.Domain\dotnet-library-api.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

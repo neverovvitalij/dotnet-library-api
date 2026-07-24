@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using dotnet_library_api.Models;
+using dotnet_library_api.Domain.Models;
 namespace dotnet_library_api.Data;
 
 public class LibraryDbContext : DbContext
