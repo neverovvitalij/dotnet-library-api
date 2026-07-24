@@ -60,7 +60,7 @@ public class BooksController : ControllerBase
         return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, bookDto);
     }
 
-    [HttpPost("{id}")]
+    [HttpPut("{id}")]
     public async Task<ActionResult<BookDto>> UpdateBook(int id, CreateBookDto createBookDto)
     {
         var book = await _libraryDbContext.Books.Include(b => b.Genres).Where(b => b.Id == id).SingleOrDefaultAsync();
