@@ -16,6 +16,9 @@ public class Program
         builder.Services.AddDbContext<LibraryDbContext>(options => options.UseNpgsql(connectionString));
 
         builder.Services.AddScoped<IBookRepository, BookRepository>();
+        builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
+        builder.Services.AddScoped<IGenreRepository, GenreRepository>();
+
 
         builder.Services.AddControllers();
         builder.Services.AddEndpointsApiExplorer();
