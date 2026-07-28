@@ -1,31 +1,33 @@
-﻿using dotnet_library_api.Infrastructure.Data;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
 using dotnet_library_api.DTOs;
 using dotnet_library_api.Domain.Models;
+using dotnet_library_api.Application.Interfaces;
 namespace dotnet_library_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 public class AuthorsController : ControllerBase
 {
-    private readonly LibraryDbContext _libraryDbContext;
-    public AuthorsController(LibraryDbContext libraryDbContext) {  _libraryDbContext = libraryDbContext; }
+    private readonly IAuthorRepository _authorRepository;
+    public AuthorsController(IAuthorRepository authorRepository) {  _authorRepository = authorRepository; }
+
     [HttpGet]
     public async Task<ActionResult<IEnumerable<AuthorDto>>> GetAuthors()
     {
-        var authors = await _libraryDbContext.Authors.Select(a => new AuthorDto(a.Id, a.Name, a.Books.Count)).ToListAsync();
-        return Ok(authors);
+        var authors = await _authorRepository.GetAllAsync();
+        var authorsDto = authors.Select(a => new AuthorDto(a.Id, a.Name, a.Books.Count)).ToList();
+        return Ok(authorsDto);
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<AuthorDto>> GetAuthorById(int id)
     {
-        var authorDto = await _libraryDbContext.Authors.Where(a => a.Id == id).Select(a => new AuthorDto(a.Id, a.Name, a.Books.Count)).FirstOrDefaultAsync();
-        if(authorDto == null)
+        var author = await _authorRepository.GetByIdAsync(id);
+        if(author == null)
         {
             return NotFound("Author wurde nicht gefunden");
         }
+        var authorDto = new AuthorDto(author.Id, author.Name, author.Books.Count);
         return Ok(authorDto);
     }
 
@@ -37,8 +39,8 @@ public class AuthorsController : ControllerBase
             Name = createAuthorDto.Name,
         };
 
-        _libraryDbContext.Authors.Add(author);
-        await _libraryDbContext.SaveChangesAsync();
+        await _authorRepository.AddAsync(author);
+        await _authorRepository.SaveChangesAsync();
 
         var authorDto = new AuthorDto(author.Id, author.Name, 0);
         return CreatedAtAction(nameof(GetAuthorById), new { id = author.Id }, authorDto);
@@ -47,7 +49,7 @@ public class AuthorsController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<AuthorDto>> UpdateAuthor(int id, CreateAuthorDto createAuthorDto)
     {
-        var author = await _libraryDbContext.Authors.Include(a => a.Books).Where(a => a.Id == id).FirstOrDefaultAsync();
+        var author = await _authorRepository.GetByIdAsync(id);
         if (author == null)
         {
             return NotFound("Author wurde nicht gefunden");
@@ -55,7 +57,7 @@ public class AuthorsController : ControllerBase
         else
         {
             author.Name = createAuthorDto.Name;
-            await _libraryDbContext.SaveChangesAsync();
+            await _authorRepository.SaveChangesAsync();
             var authorDto = new AuthorDto(author.Id, author.Name, author.Books.Count());
             return Ok(authorDto);
         }
@@ -64,15 +66,15 @@ public class AuthorsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteAuthor(int id)
     {
-        var author = await _libraryDbContext.Authors.FindAsync(id);
+        var author = await _authorRepository.GetByIdAsync(id);
         if(author == null)
         {
             return NotFound("Author wurde nicht gefunden");
         }
         else
         {
-            _libraryDbContext.Authors.Remove(author);
-            await _libraryDbContext.SaveChangesAsync();
+            _authorRepository.Delete(author);
+            await _authorRepository.SaveChangesAsync();
             return NoContent();
         }
     }
