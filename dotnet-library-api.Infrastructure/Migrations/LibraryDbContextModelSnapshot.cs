@@ -8,7 +8,7 @@ using dotnet_library_api.Infrastructure.Data;
 
 #nullable disable
 
-namespace dotnet_library_api.Migrations
+namespace dotnet_library_api.Infrastructure.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
     partial class LibraryDbContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace dotnet_library_api.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.29")
+                .HasAnnotation("ProductVersion", "8.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
@@ -37,7 +37,7 @@ namespace dotnet_library_api.Migrations
                     b.ToTable("BookGenre");
                 });
 
-            modelBuilder.Entity("dotnet_library_api.Models.Author", b =>
+            modelBuilder.Entity("dotnet_library_api.Domain.Models.Author", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,7 +54,7 @@ namespace dotnet_library_api.Migrations
                     b.ToTable("Authors");
                 });
 
-            modelBuilder.Entity("dotnet_library_api.Models.Book", b =>
+            modelBuilder.Entity("dotnet_library_api.Domain.Models.Book", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -68,6 +68,9 @@ namespace dotnet_library_api.Migrations
                     b.Property<int>("PublishedYear")
                         .HasColumnType("integer");
 
+                    b.Property<string>("Publisher")
+                        .HasColumnType("text");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("text");
@@ -79,7 +82,7 @@ namespace dotnet_library_api.Migrations
                     b.ToTable("Books");
                 });
 
-            modelBuilder.Entity("dotnet_library_api.Models.Genre", b =>
+            modelBuilder.Entity("dotnet_library_api.Domain.Models.Genre", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -96,7 +99,7 @@ namespace dotnet_library_api.Migrations
                     b.ToTable("Genres");
                 });
 
-            modelBuilder.Entity("dotnet_library_api.Models.Loan", b =>
+            modelBuilder.Entity("dotnet_library_api.Domain.Models.Loan", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -126,22 +129,22 @@ namespace dotnet_library_api.Migrations
 
             modelBuilder.Entity("BookGenre", b =>
                 {
-                    b.HasOne("dotnet_library_api.Models.Book", null)
+                    b.HasOne("dotnet_library_api.Domain.Models.Book", null)
                         .WithMany()
                         .HasForeignKey("BooksId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("dotnet_library_api.Models.Genre", null)
+                    b.HasOne("dotnet_library_api.Domain.Models.Genre", null)
                         .WithMany()
                         .HasForeignKey("GenresId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("dotnet_library_api.Models.Book", b =>
+            modelBuilder.Entity("dotnet_library_api.Domain.Models.Book", b =>
                 {
-                    b.HasOne("dotnet_library_api.Models.Author", "Author")
+                    b.HasOne("dotnet_library_api.Domain.Models.Author", "Author")
                         .WithMany("Books")
                         .HasForeignKey("AuthorId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -150,9 +153,9 @@ namespace dotnet_library_api.Migrations
                     b.Navigation("Author");
                 });
 
-            modelBuilder.Entity("dotnet_library_api.Models.Loan", b =>
+            modelBuilder.Entity("dotnet_library_api.Domain.Models.Loan", b =>
                 {
-                    b.HasOne("dotnet_library_api.Models.Book", "Book")
+                    b.HasOne("dotnet_library_api.Domain.Models.Book", "Book")
                         .WithMany()
                         .HasForeignKey("BookId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -161,7 +164,7 @@ namespace dotnet_library_api.Migrations
                     b.Navigation("Book");
                 });
 
-            modelBuilder.Entity("dotnet_library_api.Models.Author", b =>
+            modelBuilder.Entity("dotnet_library_api.Domain.Models.Author", b =>
                 {
                     b.Navigation("Books");
                 });

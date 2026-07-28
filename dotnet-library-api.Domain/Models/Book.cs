@@ -8,4 +8,5 @@ public class Book
     public int AuthorId { get; set; }
     public Author Author { get; set; } = null!;
     public ICollection<Genre> Genres { get; set; } = new List<Genre>();
+    public string? Publisher { get; set; }
 }

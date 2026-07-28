@@ -9,7 +9,7 @@ using dotnet_library_api.Infrastructure.Data;
 
 #nullable disable
 
-namespace dotnet_library_api.Migrations
+namespace dotnet_library_api.Infrastructure.Migrations
 {
     [DbContext(typeof(LibraryDbContext))]
     [Migration("20260721133940_InitialCreate")]
