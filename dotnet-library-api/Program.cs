@@ -18,6 +18,7 @@ public class Program
         builder.Services.AddScoped<IBookRepository, BookRepository>();
         builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
         builder.Services.AddScoped<IGenreRepository, GenreRepository>();
+        builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
 
         builder.Services.AddControllers();
