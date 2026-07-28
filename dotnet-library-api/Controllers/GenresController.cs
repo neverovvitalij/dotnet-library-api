@@ -1,8 +1,7 @@
-﻿using dotnet_library_api.Infrastructure.Data;
-using dotnet_library_api.DTOs;
+﻿using dotnet_library_api.DTOs;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using dotnet_library_api.Domain.Models;
+using dotnet_library_api.Application.Interfaces;
 
 
 namespace dotnet_library_api.Controllers;
@@ -11,23 +10,26 @@ namespace dotnet_library_api.Controllers;
 [Route("api/[controller]")]
 public class GenresController : ControllerBase
 {
-    private readonly LibraryDbContext _libraryDbContext;
-    public GenresController(LibraryDbContext libraryDbContext) {  _libraryDbContext = libraryDbContext; }
+    private readonly IGenreRepository _genreRepository;
+    public GenresController(IGenreRepository genreRepository) {  _genreRepository = genreRepository; }
     [HttpGet]
     public async Task<ActionResult<IEnumerable<GenreDto>>> GetGenre()
     {
-        var genresDto = await _libraryDbContext.Genres.Select(a => new GenreDto(a.Id, a.Name)).ToListAsync();
+        var genres = await _genreRepository.GetAllAsync();
+        var genresDto = genres.Select(g => new GenreDto(g.Id, g.Name));
         return Ok(genresDto);
+
     }
 
     [HttpGet("{id}")]
     public async Task<ActionResult<GenreDto>> GetGenreById(int id)
     {
-        var genreDto = await _libraryDbContext.Genres.Where(a => a.Id == id).Select(a => new GenreDto(a.Id, a.Name)).FirstOrDefaultAsync();
-        if(genreDto == null)
+        var genre = await _genreRepository.GetByIdAsync(id);
+        if(genre == null)
         {
             return NotFound("Genre wurde nicht gefunden");
         }
+        var genreDto = new GenreDto(genre.Id, genre.Name);
         return Ok(genreDto);
     }
 
@@ -38,8 +40,8 @@ public class GenresController : ControllerBase
         {
             Name = createGenreDto.Name,
         };
-        _libraryDbContext.Genres.Add(genre);
-        await _libraryDbContext.SaveChangesAsync();
+        await _genreRepository.AddAsync(genre);
+        await _genreRepository.SaveChangesAsync();
 
         var genreDto = new GenreDto(genre.Id, genre.Name);
         return CreatedAtAction(nameof(GetGenreById), new {id  = genre.Id}, genreDto);
@@ -48,7 +50,7 @@ public class GenresController : ControllerBase
     [HttpPut("{id}")]
     public async Task<ActionResult<GenreDto>> UpdateGenre(int id, CreateGenreDto createGenreDto)
     {
-        var genre = await _libraryDbContext.Genres.Where(g => g.Id == id).FirstOrDefaultAsync();
+        var genre = await _genreRepository.GetByIdAsync(id);
         if(genre == null)
         {
             return NotFound("Genre wurde nicht gefunden");
@@ -56,7 +58,7 @@ public class GenresController : ControllerBase
         else
         {
             genre.Name = createGenreDto.Name;
-            await _libraryDbContext.SaveChangesAsync();
+            await _genreRepository.SaveChangesAsync();
             var genreDto = new GenreDto(genre.Id, genre.Name);
             return Ok(genreDto);
         }
@@ -65,15 +67,15 @@ public class GenresController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<ActionResult> DeleteGenre(int id)
     {
-        var genre = await _libraryDbContext.Genres.FindAsync(id);
+        var genre = await _genreRepository.GetByIdAsync(id);
         if(genre == null)
         {
             return NotFound("Genre wurde nicht gefunden");
         }
         else
         {
-            _libraryDbContext.Genres.Remove(genre);
-            await _libraryDbContext.SaveChangesAsync();
+            _genreRepository.Delete(genre);
+            await _genreRepository.SaveChangesAsync();
             return NoContent();
         }
     }
