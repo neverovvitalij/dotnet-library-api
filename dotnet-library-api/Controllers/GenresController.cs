@@ -1,7 +1,7 @@
-﻿using dotnet_library_api.DTOs;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using dotnet_library_api.Domain.Models;
 using dotnet_library_api.Application.Interfaces;
+using dotnet_library_api.DTOs.V1;
 
 
 namespace dotnet_library_api.Controllers;
