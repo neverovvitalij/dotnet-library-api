@@ -22,12 +22,12 @@ public class BooksController : ControllerBase
     }
 
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks()
+    public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks(int page = 1, int pageSize = 10)
     {
-        var books = await _bookRepository.GetAllAsync();
-        var booksDto = books.Select(b => new BookDto(b.Id, b.Title, b.PublishedYear, b.Author.Name, b.Genres.Select(g => g.Name).ToList())).ToList();
+        var books = await _bookRepository.GetPagedAsync(page, pageSize);
+        Response.Headers["X-Total-Count"] = books.TotalCount.ToString();
+        var booksDto = books.Items.Select(b => new BookDto(b.Id, b.Title, b.PublishedYear, b.Author.Name, b.Genres.Select(g => g.Name).ToList())).ToList();
         return Ok(booksDto);
-
     }
 
     [HttpGet("{id}")]

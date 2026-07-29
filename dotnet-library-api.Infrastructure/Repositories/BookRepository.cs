@@ -2,6 +2,7 @@
 using dotnet_library_api.Infrastructure.Data;
 using dotnet_library_api.Domain.Models;
 using Microsoft.EntityFrameworkCore;
+using dotnet_library_api.Application.Common;
 
 
 namespace dotnet_library_api.Infrastructure.Repositories;
@@ -35,5 +36,17 @@ public class BookRepository : IBookRepository
     public void Delete(Book book)
     {
         _libraryDbContext.Books.Remove(book);
+    }
+    public async Task<PagedResult<Book>> GetPagedAsync(int page, int pageSize)
+    {
+        var totalCount = await _libraryDbContext.Books.CountAsync();
+        var books = await _libraryDbContext.Books
+            .Include(b => b.Author)
+            .Include(b => b.Genres)
+            .OrderBy(b => b.Id)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .ToListAsync();
+        return new PagedResult<Book>(books, totalCount);
     }
 }
