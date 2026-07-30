@@ -7,6 +7,7 @@ using dotnet_library_api.Infrastructure.Data;
 using dotnet_library_api.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Asp.Versioning;
+using dotnet_library_api.Application.Common;
 namespace dotnet_library_api;
 
 public class Program
@@ -26,6 +27,7 @@ public class Program
 
         var jwtSettings = builder.Configuration.GetSection("Jwt");
         var jwtKey = jwtSettings["Key"];
+        builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("Jwt"));
 
         builder.Services.AddAuthentication(option =>
         {
