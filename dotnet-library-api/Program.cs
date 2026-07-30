@@ -8,6 +8,7 @@ using dotnet_library_api.Infrastructure.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Asp.Versioning;
 using dotnet_library_api.Application.Common;
+using dotnet_library_api.Infrastructure.Services;
 namespace dotnet_library_api;
 
 public class Program
@@ -24,6 +25,8 @@ public class Program
         builder.Services.AddScoped<IAuthorRepository, AuthorRepository>();
         builder.Services.AddScoped<IGenreRepository, GenreRepository>();
         builder.Services.AddScoped<ILoanRepository, LoanRepository>();
+        builder.Services.AddScoped<IUserRepository, UserRepository>();
+        builder.Services.AddScoped<ITokenService, TokenService>();
 
         var jwtSettings = builder.Configuration.GetSection("Jwt");
         var jwtKey = jwtSettings["Key"];
