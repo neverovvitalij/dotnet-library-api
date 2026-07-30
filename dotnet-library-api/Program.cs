@@ -27,6 +27,7 @@ public class Program
         builder.Services.AddScoped<ILoanRepository, LoanRepository>();
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<ITokenService, TokenService>();
+        builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
 
         var jwtSettings = builder.Configuration.GetSection("Jwt");
         var jwtKey = jwtSettings["Key"];
