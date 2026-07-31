@@ -24,32 +24,69 @@ public class AuthController : ControllerBase
         _jwtSettings = jwtOptions.Value;
     }
 
-    [HttpPost]
+    [HttpPost("register")]
     public async Task<ActionResult<AuthResponseDto>> Register(RegisterDto registerDto)
     {
         var isAlreadyRegistered = await _userRepository.GetByUsernameAsync(registerDto.Username);
-        if (isAlreadyRegistered != null)
+        if(isAlreadyRegistered != null)
         {
-            return Conflict("UserName ist bereits vergeben");
+            return Conflict("Username ist bereits registriert");
         }
+
         var user = new User
         {
             Username = registerDto.Username,
             Role = "User"
         };
+
         var hasher = new PasswordHasher<User>();
         var hashedPassword = hasher.HashPassword(user, registerDto.Password);
+
         user.PasswordHash = hashedPassword;
         await _userRepository.AddAsync(user);
         await _userRepository.SaveChangesAsync();
 
         var accessToken = _tokenService.GenerateAccessToken(user);
         var refreshToken = _tokenService.GenerateRefreshToken();
+
         var refreshTokenModel = new RefreshToken
         {
             Token = refreshToken,
-            User = user,
             ExpirationDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays),
+            User = user,
+            IsRevoked = false
+        };
+        await _refreshTokenRepository.AddNewTokenAsync(refreshTokenModel);
+        await _refreshTokenRepository.SaveChangesAsync();
+
+        var authResponseDto = new AuthResponseDto(refreshToken, accessToken);
+        return Ok(authResponseDto);
+    }
+
+    [HttpPost("login")]
+    public async Task<ActionResult<AuthResponseDto>> Login(LoginDto loginDto)
+    {
+        var user = await _userRepository.GetByUsernameAsync(loginDto.Username);
+        if (user == null)
+        {
+            return Unauthorized("Ungültiger Benutzername oder Passwort");
+        }
+
+        var hasher = new PasswordHasher<User>();
+        var result = hasher.VerifyHashedPassword(user, user.PasswordHash, loginDto.Password);
+        if (result != PasswordVerificationResult.Success)
+        {
+            return Unauthorized("Ungültiger Benutzername oder Passwort");
+        }
+
+        var accessToken = _tokenService.GenerateAccessToken(user);
+        var refreshToken = _tokenService.GenerateRefreshToken();
+
+        var refreshTokenModel = new RefreshToken
+        {
+            Token = refreshToken,
+            ExpirationDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays),
+            User = user,
             IsRevoked = false
         };
         await _refreshTokenRepository.AddNewTokenAsync(refreshTokenModel);
