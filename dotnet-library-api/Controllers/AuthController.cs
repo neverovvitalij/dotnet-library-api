@@ -95,4 +95,31 @@ public class AuthController : ControllerBase
         var authResponseDto = new AuthResponseDto(refreshToken, accessToken);
         return Ok(authResponseDto);
     }
+
+    [HttpPost("refresh")]
+    public async Task<ActionResult<AuthResponseDto>> Refresh(RefreshDto refreshDto)
+    {
+        var existRefreshToken = await _refreshTokenRepository.GetByTokenAsync(refreshDto.RefreshToken);
+        if (existRefreshToken == null || existRefreshToken.ExpirationDate < DateTime.UtcNow || existRefreshToken.IsRevoked == true)
+        {
+            return Unauthorized();
+        }
+
+        var accessToken = _tokenService.GenerateAccessToken(existRefreshToken.User);
+        var refreshToken = _tokenService.GenerateRefreshToken();
+
+        var refreshTokenModel = new RefreshToken
+        {
+            Token = refreshToken,
+            ExpirationDate = DateTime.UtcNow.AddDays(_jwtSettings.RefreshTokenExpirationDays),
+            User = existRefreshToken.User,
+            IsRevoked = false
+        };
+        existRefreshToken.IsRevoked = true;
+        await _refreshTokenRepository.AddNewTokenAsync(refreshTokenModel);
+        await _refreshTokenRepository.SaveChangesAsync();
+
+        var authResponseDto = new AuthResponseDto(refreshToken, accessToken);
+        return Ok(authResponseDto);
+    }
 }
