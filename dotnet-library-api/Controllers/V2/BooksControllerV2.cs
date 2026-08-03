@@ -2,6 +2,7 @@
 using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.Domain.Models;
 using dotnet_library_api.DTOs.V2;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_library_api.Controllers.V2;
@@ -44,6 +45,7 @@ public class BooksControllerV2 : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles ="Admin")]
     public async Task<ActionResult<BookDtoV2>> CreateBook(CreateBookDtoV2 createBookDtoV2)
     {
         var author = await _authorRepository.GetByIdAsync(createBookDtoV2.AuthorId);
@@ -70,6 +72,7 @@ public class BooksControllerV2 : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<BookDtoV2>> UpdateBook(int id, CreateBookDtoV2 createBookDtoV2)
     {
         var book = await _bookRepository.GetByIdAsync(id);
@@ -95,6 +98,7 @@ public class BooksControllerV2 : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteBook(int id)
     {
         var book = await _bookRepository.GetByIdAsync(id);

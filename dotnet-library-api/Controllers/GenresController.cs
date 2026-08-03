@@ -2,6 +2,7 @@
 using dotnet_library_api.Domain.Models;
 using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.DTOs.V1;
+using Microsoft.AspNetCore.Authorization;
 
 
 namespace dotnet_library_api.Controllers;
@@ -34,6 +35,7 @@ public class GenresController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles ="Admin")]
     public async Task<ActionResult<GenreDto>> CreateGenre(CreateGenreDto createGenreDto)
     {
         var genre = new Genre
@@ -48,6 +50,7 @@ public class GenresController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<GenreDto>> UpdateGenre(int id, CreateGenreDto createGenreDto)
     {
         var genre = await _genreRepository.GetByIdAsync(id);
@@ -65,6 +68,7 @@ public class GenresController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteGenre(int id)
     {
         var genre = await _genreRepository.GetByIdAsync(id);

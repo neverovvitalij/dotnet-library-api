@@ -1,12 +1,14 @@
-﻿using dotnet_library_api.Domain.Models;
-using Microsoft.AspNetCore.Mvc;
-using dotnet_library_api.Application.Interfaces;
+﻿using dotnet_library_api.Application.Interfaces;
+using dotnet_library_api.Domain.Models;
 using dotnet_library_api.DTOs.V1;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace dotnet_library_api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize(Roles = "Admin")]
 public class LoansController : ControllerBase
 {
     private readonly ILoanRepository _loanRepository;

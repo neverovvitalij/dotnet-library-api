@@ -1,7 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.Domain.Models;
-using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.DTOs.V1;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 namespace dotnet_library_api.Controllers;
 
 [ApiController]
@@ -32,6 +33,7 @@ public class AuthorsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<AuthorDto>> CreateAuthor(CreateAuthorDto createAuthorDto)
     {
         var author = new Author
@@ -47,6 +49,7 @@ public class AuthorsController : ControllerBase
     }
 
     [HttpPut("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult<AuthorDto>> UpdateAuthor(int id, CreateAuthorDto createAuthorDto)
     {
         var author = await _authorRepository.GetByIdAsync(id);
@@ -64,6 +67,7 @@ public class AuthorsController : ControllerBase
     }
 
     [HttpDelete("{id}")]
+    [Authorize(Roles = "Admin")]
     public async Task<ActionResult> DeleteAuthor(int id)
     {
         var author = await _authorRepository.GetByIdAsync(id);

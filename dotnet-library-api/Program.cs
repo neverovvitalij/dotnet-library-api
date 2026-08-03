@@ -1,14 +1,15 @@
 
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Asp.Versioning;
+using dotnet_library_api.Application.Common;
 using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.Infrastructure.Data;
 using dotnet_library_api.Infrastructure.Repositories;
-using Microsoft.EntityFrameworkCore;
-using Asp.Versioning;
-using dotnet_library_api.Application.Common;
 using dotnet_library_api.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 namespace dotnet_library_api;
 
 public class Program
@@ -68,8 +69,31 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(options =>
         {
-            options.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Library API", Version = "v1" });
-            options.SwaggerDoc("v2", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Library API", Version = "v2" });
+            options.SwaggerDoc("v1", new OpenApiInfo { Title = "Library API", Version = "v1" });
+            options.SwaggerDoc("v2", new OpenApiInfo { Title = "Library API", Version = "v2" });
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Type = SecuritySchemeType.ApiKey,
+                Scheme = "Bearer",
+                BearerFormat = "JWT",
+                In = ParameterLocation.Header,
+                Description = "Geben Sie 'Bearer' gefolgt von einem Leerzeichen und dann Ihrem Token ein."
+            });
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+{
+    {
+        new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        },
+        Array.Empty<string>()
+    }
+});
         });
 
         var app = builder.Build();
