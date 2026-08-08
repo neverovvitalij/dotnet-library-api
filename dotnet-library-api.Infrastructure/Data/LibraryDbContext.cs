@@ -14,4 +14,11 @@ public class LibraryDbContext : DbContext
     {
         
     }
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Loan>()
+            .HasIndex(l => l.BookId)
+            .IsUnique()
+            .HasFilter("\"ReturnDate\" IS NULL");
+    }
 }

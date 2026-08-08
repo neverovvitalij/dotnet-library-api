@@ -3,6 +3,7 @@ using dotnet_library_api.Domain.Models;
 using dotnet_library_api.DTOs.V1;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace dotnet_library_api.Controllers;
 
@@ -61,8 +62,15 @@ public class LoansController : ControllerBase
             LoanDate = DateTime.UtcNow,
             ReturnDate = null
         };
+        try
+        {
         await _loanRepository.AddAsync(loan);
         await _loanRepository.SaveChangesAsync();
+        }
+        catch (DbUpdateException)
+        {
+            return Conflict("Das Buch ist bereits ausgeliehen");
+        }
 
         var loanDto = new LoanDto(loan.Id, book.Title, loan.BorrowerName, loan.LoanDate, loan.ReturnDate);
         return CreatedAtAction(nameof(GetLoanById), new {id = loan.Id}, loanDto);
