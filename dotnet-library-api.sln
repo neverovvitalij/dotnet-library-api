@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-library-api.Applicat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-library-api.Infrastructure", "dotnet-library-api.Infrastructure\dotnet-library-api.Infrastructure.csproj", "{B0CE72D2-DBFD-424B-B095-82BD925207F1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "dotnet-library-api.Tests", "dotnet-library-api.Tests\dotnet-library-api.Tests.csproj", "{498B875B-39C1-4DED-BE9D-0A89DE295CE3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{B0CE72D2-DBFD-424B-B095-82BD925207F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0CE72D2-DBFD-424B-B095-82BD925207F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0CE72D2-DBFD-424B-B095-82BD925207F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{498B875B-39C1-4DED-BE9D-0A89DE295CE3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{498B875B-39C1-4DED-BE9D-0A89DE295CE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{498B875B-39C1-4DED-BE9D-0A89DE295CE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{498B875B-39C1-4DED-BE9D-0A89DE295CE3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
