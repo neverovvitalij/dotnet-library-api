@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+
+using dotnet_library_api.Application.Books.Models;
+using MediatR;
 
 namespace dotnet_library_api.Application.Books.Commands;
-internal class CreateBookCommand
-{
-}
+public record CreateBookCommand(string Title, int PublishedYear, int AuthorId, List<int> GenreIds) : IRequest<BookReadModel?>;

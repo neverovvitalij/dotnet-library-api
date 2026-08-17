@@ -1,4 +1,5 @@
 ﻿using Asp.Versioning;
+using dotnet_library_api.Application.Books.Commands;
 using dotnet_library_api.Application.Books.Queries;
 using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.Domain.Models;
@@ -52,26 +53,14 @@ public class BooksController : ControllerBase
     [Authorize(Roles = "Admin")]
     public async Task<ActionResult<BookDto>> CreateBook(CreateBookDto createBookDto)
     {
-        var author = await _authorRepository.GetByIdAsync(createBookDto.AuthorId);
-        if (author == null)
+        var result = await _mediator.Send(new CreateBookCommand(createBookDto.Title, createBookDto.PublishedYear, createBookDto.AuthorId, createBookDto.GenreIds));
+        if (result == null)
         {
             return NotFound("Author wurde nicht gefunden");
         }
 
-        var genreList = await _genreRepository.GetByIdsAsync(createBookDto.GenreIds);
-
-        var book = new Book
-        {
-            AuthorId = createBookDto.AuthorId,
-            Title = createBookDto.Title,
-            PublishedYear = createBookDto.PublishedYear,
-            Genres = genreList
-        };
-        await _bookRepository.AddAsync(book);
-        await _bookRepository.SaveChangesAsync();
-
-        var bookDto = new BookDto(book.Id, book.Title, book.PublishedYear, author.Name, book.Genres.Select(g => g.Name).ToList());
-        return CreatedAtAction(nameof(GetBookById), new { id = book.Id }, bookDto);
+        var bookDto = new BookDto(result.Id, result.Title, result.PublishedYear, result.AuthorName, result.Genres);
+        return CreatedAtAction(nameof(GetBookById), new { id = result.Id }, bookDto);
     }
 
     [HttpPut("{id}")]
