@@ -29,6 +29,7 @@ public class Program
         builder.Services.AddScoped<IUserRepository, UserRepository>();
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
+        builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(JwtSettings).Assembly));
 
         var jwtSettings = builder.Configuration.GetSection("Jwt");
         var jwtKey = jwtSettings["Key"];

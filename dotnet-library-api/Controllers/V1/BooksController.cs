@@ -1,7 +1,9 @@
 ﻿using Asp.Versioning;
+using dotnet_library_api.Application.Books.Queries;
 using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.Domain.Models;
 using dotnet_library_api.DTOs.V1;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,19 +17,21 @@ public class BooksController : ControllerBase
     private readonly IBookRepository _bookRepository;
     private readonly IAuthorRepository _authorRepository;
     private readonly IGenreRepository _genreRepository;
-    public BooksController(IBookRepository bookRepository, IAuthorRepository authorRepository, IGenreRepository genreRepository) 
+    private readonly IMediator _mediator;
+    public BooksController(IBookRepository bookRepository, IAuthorRepository authorRepository, IGenreRepository genreRepository, IMediator mediator) 
     { 
         _bookRepository = bookRepository;
         _authorRepository = authorRepository;
         _genreRepository = genreRepository;
+        _mediator = mediator;
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<BookDto>>> GetBooks(int page = 1, int pageSize = 10)
     {
-        var books = await _bookRepository.GetPagedAsync(page, pageSize);
-        Response.Headers["X-Total-Count"] = books.TotalCount.ToString();
-        var booksDto = books.Items.Select(b => new BookDto(b.Id, b.Title, b.PublishedYear, b.Author.Name, b.Genres.Select(g => g.Name).ToList())).ToList();
+        var result = await _mediator.Send(new GetBooksQuery(page, pageSize));
+        Response.Headers["X-Total-Count"] = result.TotalCount.ToString();
+        var booksDto = result.Items.Select(b => new BookDto(b.Id, b.Title, b.PublishedYear, b.AuthorName, b.Genres)).ToList();
         return Ok(booksDto);
     }
 
