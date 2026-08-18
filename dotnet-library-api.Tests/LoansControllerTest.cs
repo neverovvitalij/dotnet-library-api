@@ -2,7 +2,6 @@ using dotnet_library_api.Application.Books.Commands;
 using dotnet_library_api.Application.Books.Models;
 using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.Controllers;
-using dotnet_library_api.Domain.Models;
 using dotnet_library_api.DTOs.V1;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;

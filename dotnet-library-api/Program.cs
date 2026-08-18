@@ -2,10 +2,12 @@
 using System.Text;
 using Asp.Versioning;
 using dotnet_library_api.Application.Common;
+using dotnet_library_api.Application.Common.Behaviors;
 using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.Infrastructure.Data;
 using dotnet_library_api.Infrastructure.Repositories;
 using dotnet_library_api.Infrastructure.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -30,6 +32,7 @@ public class Program
         builder.Services.AddScoped<ITokenService, TokenService>();
         builder.Services.AddScoped<IRefreshTokenRepository, RefreshTokenRepository>();
         builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(JwtSettings).Assembly));
+        builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(LoggingBehavior<,>));
 
         var jwtSettings = builder.Configuration.GetSection("Jwt");
         var jwtKey = jwtSettings["Key"];
