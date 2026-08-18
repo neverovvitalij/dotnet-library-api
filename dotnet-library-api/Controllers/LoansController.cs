@@ -1,6 +1,8 @@
-﻿using dotnet_library_api.Application.Interfaces;
-using dotnet_library_api.Domain.Models;
+﻿using dotnet_library_api.Application.Books.Commands;
+using dotnet_library_api.Application.Books.Models;
+using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.DTOs.V1;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,11 +15,11 @@ namespace dotnet_library_api.Controllers;
 public class LoansController : ControllerBase
 {
     private readonly ILoanRepository _loanRepository;
-    private readonly IBookRepository _bookRepository;
-    public LoansController(ILoanRepository loanRepository, IBookRepository bookRepository)
+    private readonly IMediator _mediator;
+    public LoansController(ILoanRepository loanRepository, IMediator mediator)
     {
         _loanRepository = loanRepository;
-        _bookRepository = bookRepository;
+        _mediator = mediator;
     }
 
     [HttpGet]
@@ -43,37 +45,29 @@ public class LoansController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<LoanDto>> CreateLoan(CreateLoanDto createLoanDto)
     {
-        var book = await _bookRepository.GetByIdAsync(createLoanDto.BookId);
-        if (book == null)
+        try
+        {
+        var result = await _mediator.Send(new CreateLoanCommand(createLoanDto.BookId, createLoanDto.BorrowerName));
+
+        if (result.Error == CreateLoanError.BookNotFound)
         {
             return NotFound("Das Buch wurde nicht gefunden");
         }
 
-        bool isAlreadyLoaned = await _loanRepository.HasActiveLoanAsync(createLoanDto.BookId);
-        if (isAlreadyLoaned)
+        if (result.Error == CreateLoanError.AlreadyLoaned)
         {
             return Conflict("Das Buch ist bereits ausgeliehen");
         }
 
-        var loan = new Loan
-        {
-            BookId = createLoanDto.BookId,
-            BorrowerName = createLoanDto.BorrowerName,
-            LoanDate = DateTime.UtcNow,
-            ReturnDate = null
-        };
-        try
-        {
-        await _loanRepository.AddAsync(loan);
-        await _loanRepository.SaveChangesAsync();
+        var loanDto = new LoanDto(result.Loan!.Id, result.Loan.BookTitle, result.Loan.BorrowerName, result.Loan.LoanDate, result.Loan.ReturnDate);
+        return CreatedAtAction(nameof(GetLoanById), new {id = result.Loan.Id}, loanDto);
+
         }
         catch (DbUpdateException)
         {
             return Conflict("Das Buch ist bereits ausgeliehen");
         }
 
-        var loanDto = new LoanDto(loan.Id, book.Title, loan.BorrowerName, loan.LoanDate, loan.ReturnDate);
-        return CreatedAtAction(nameof(GetLoanById), new {id = loan.Id}, loanDto);
     }
 
     [HttpPut("{id}/return")]

@@ -1,7 +1,10 @@
+using dotnet_library_api.Application.Books.Commands;
+using dotnet_library_api.Application.Books.Models;
 using dotnet_library_api.Application.Interfaces;
 using dotnet_library_api.Controllers;
 using dotnet_library_api.Domain.Models;
 using dotnet_library_api.DTOs.V1;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
@@ -13,15 +16,17 @@ public class LoansControllerTest
     public async Task CreateLoan_ShouldReturnCreated_WhenBookIsAvailable()
     {
         // Arrange
-        var mockBookRepo = new Mock<IBookRepository>();
         var mockLoanRepo = new Mock<ILoanRepository>();
+        var mockMediator = new Mock<IMediator>();
 
-        var existingBook = new Book { Id = 1, Title = "Test Book" }; 
-
-        mockBookRepo.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(existingBook);
-        mockLoanRepo.Setup(repo => repo.HasActiveLoanAsync(1)).ReturnsAsync(false);
-
-        var controller = new LoansController(mockLoanRepo.Object, mockBookRepo.Object);
+        var expectedResult = new CreateLoanResult
+            (
+                new LoanReadModel(1, "Test Book", "Max Mustermann", DateTime.UtcNow, null),
+                CreateLoanError.None
+            );
+        mockMediator.Setup(m => m.Send(It.IsAny<CreateLoanCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResult);
+        var controller = new LoansController(mockLoanRepo.Object ,mockMediator.Object);
         var createLoanDto = new CreateLoanDto(1, "Max Mustermann");
 
         // Act
@@ -37,15 +42,18 @@ public class LoansControllerTest
     public async Task CreateLoan_ShouldReturnConflict_WhenBookIsAlreadyLoaned()
     {
         // Arrange
-        var mockBookRepo = new Mock<IBookRepository>();
         var mockLoanRepo = new Mock<ILoanRepository>();
+        var mockMediator = new Mock<IMediator>();
 
-        var existingBook = new Book { Id = 1, Publisher = "Test Book" };
 
-        mockBookRepo.Setup(repo => repo.GetByIdAsync(1)).ReturnsAsync(existingBook);
-        mockLoanRepo.Setup(repo => repo.HasActiveLoanAsync(1)).ReturnsAsync(true);
+        var expectedResult = new CreateLoanResult
+            (
+               null, CreateLoanError.AlreadyLoaned
+            );
+        mockMediator.Setup(m => m.Send(It.IsAny<CreateLoanCommand>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(expectedResult);
+        var controller = new LoansController(mockLoanRepo.Object, mockMediator.Object);
 
-        var controller = new LoansController(mockLoanRepo.Object, mockBookRepo.Object);
         var createLoan = new CreateLoanDto(1, "Max Mustermann");
 
         // Act
